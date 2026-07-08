@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Better Subtitles</title>
+</head>
+<body>
+    <div id="BetterSubtitlesConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="BetterSubtitlesConfigForm">
+                    <div class="verticalSection">
+                        <h2>Better Subtitles</h2>
+                        <p>
+                            Automatically selects the forced English subtitle track (or an anime
+                            "Signs &amp; Songs" track) as soon as playback starts, even when the
+                            file's forced flag or language tag is missing or wrong. Everything else
+                            is left untouched.
+                        </p>
+                    </div>
+
+                    <div class="checkboxContainer checkboxContainer-withDescription">
+                        <label>
+                            <input is="emby-checkbox" type="checkbox" id="Enabled" />
+                            <span>Enabled</span>
+                        </label>
+                        <div class="fieldDescription checkboxFieldDescription">
+                            Turn automatic forced-subtitle selection on or off.
+                        </div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="PreferredLanguages">Preferred languages</label>
+                        <input is="emby-input" type="text" id="PreferredLanguages" />
+                        <div class="fieldDescription">
+                            Comma-separated ISO 639-2 language codes (e.g. <code>eng</code>). A subtitle
+                            stream flagged as forced is trusted automatically when its language is one
+                            of these (or blank/undefined).
+                        </div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="ForcedKeywords">Forced track keywords</label>
+                        <textarea is="emby-textarea" id="ForcedKeywords" rows="6"></textarea>
+                        <div class="fieldDescription">
+                            One keyword or phrase per line, matched case-insensitively against the
+                            subtitle track's title. Used to recognize "Signs &amp; Songs" style forced
+                            tracks that aren't flagged forced (or are mistagged) in the file itself.
+                        </div>
+                    </div>
+
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function () {
+            var pluginId = "a2e6f8b0-3f7c-4b7a-9b0e-6f1c2d3a4b5c";
+
+            function loadConfig(page) {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    page.querySelector("#Enabled").checked = config.Enabled;
+                    page.querySelector("#PreferredLanguages").value = config.PreferredLanguages || "";
+                    page.querySelector("#ForcedKeywords").value = config.ForcedKeywords || "";
+                    Dashboard.hideLoadingMsg();
+                });
+            }
+
+            document.querySelector("#BetterSubtitlesConfigPage")
+                .addEventListener("pageshow", function () {
+                    loadConfig(this);
+                });
+
+            document.querySelector("#BetterSubtitlesConfigForm")
+                .addEventListener("submit", function (e) {
+                    var page = this.closest("#BetterSubtitlesConfigPage");
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                        config.Enabled = page.querySelector("#Enabled").checked;
+                        config.PreferredLanguages = page.querySelector("#PreferredLanguages").value;
+                        config.ForcedKeywords = page.querySelector("#ForcedKeywords").value;
+                        ApiClient.updatePluginConfiguration(pluginId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        });
+                    });
+                    e.preventDefault();
+                    return false;
+                });
+        })();
+    </script>
+</body>
+</html>
