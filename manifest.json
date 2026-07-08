@@ -6,6 +6,15 @@
     "owner": "TIGamingTV",
     "overview": "Auto-select forced/Signs & Songs subtitles",
     "category": "General",
-    "versions": []
+    "versions": [
+      {
+        "version": "0.0.1.0",
+        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.1.0",
+        "targetAbi": "10.10.0.0",
+        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.1.0/better-subtitles_0.0.1.0.zip",
+        "checksum": "3dd28be6fc272edd71de2ca56f37bd2b",
+        "timestamp": "2026-07-08 15:45:37"
+      }
+    ]
   }
 ]
