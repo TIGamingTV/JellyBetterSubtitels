@@ -1,0 +1,114 @@
+name: Build
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ["v*"]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore JellyBetterSubtitels.sln
+
+      - name: Build
+        run: dotnet build JellyBetterSubtitels.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Jellyfin.Plugin.BetterSubtitles.Tests/Jellyfin.Plugin.BetterSubtitles.Tests.csproj --no-build --configuration Release
+
+  release:
+    needs: build-and-test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Determine version
+        id: version
+        run: |
+          tag="${GITHUB_REF#refs/tags/v}"
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Publish plugin
+        run: |
+          dotnet publish Jellyfin.Plugin.BetterSubtitles/Jellyfin.Plugin.BetterSubtitles.csproj \
+            --configuration Release \
+            --output publish \
+            -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Package release zip
+        id: package
+        run: |
+          zip_name="better-subtitles_${{ steps.version.outputs.version }}.zip"
+          cd publish
+          zip "../$zip_name" Jellyfin.Plugin.BetterSubtitles.dll
+          cd ..
+          checksum=$(md5sum "$zip_name" | cut -d' ' -f1)
+          echo "zip_name=$zip_name" >> "$GITHUB_OUTPUT"
+          echo "checksum=$checksum" >> "$GITHUB_OUTPUT"
+
+      - name: Update repository manifest
+        run: |
+          python3 - "$GITHUB_OUTPUT" <<'EOF'
+          import json
+          import sys
+          from datetime import datetime, timezone
+
+          version = "${{ steps.version.outputs.version }}"
+          zip_name = "${{ steps.package.outputs.zip_name }}"
+          checksum = "${{ steps.package.outputs.checksum }}"
+          repo = "${{ github.repository }}"
+          target_abi = "10.10.0.0"
+
+          with open("manifest.json") as f:
+              manifest = json.load(f)
+
+          entry = {
+              "version": version,
+              "changelog": f"See https://github.com/{repo}/releases/tag/v{version}",
+              "targetAbi": target_abi,
+              "sourceUrl": f"https://github.com/{repo}/releases/download/v{version}/{zip_name}",
+              "checksum": checksum,
+              "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+          }
+
+          manifest[0]["versions"].insert(0, entry)
+
+          with open("manifest.json", "w") as f:
+              json.dump(manifest, f, indent=2)
+              f.write("\n")
+          EOF
+
+      - name: Commit updated manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "Update manifest for v${{ steps.version.outputs.version }}"
+          git push origin HEAD:${{ github.event.repository.default_branch }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.package.outputs.zip_name }}
+          generate_release_notes: true

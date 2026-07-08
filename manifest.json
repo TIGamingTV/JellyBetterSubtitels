@@ -1,0 +1,11 @@
+[
+  {
+    "guid": "a2e6f8b0-3f7c-4b7a-9b0e-6f1c2d3a4b5c",
+    "name": "Better Subtitles",
+    "description": "Automatically selects the forced English subtitle track (or an anime \"Signs & Songs\" track) as soon as playback starts, even when the file's forced flag or language tag is missing or wrong.",
+    "owner": "TIGamingTV",
+    "overview": "Auto-select forced/Signs & Songs subtitles",
+    "category": "General",
+    "versions": []
+  }
+]
