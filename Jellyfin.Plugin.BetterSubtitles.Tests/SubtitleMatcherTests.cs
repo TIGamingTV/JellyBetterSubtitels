@@ -119,4 +119,48 @@ public class SubtitleMatcherTests
 
         Assert.Equal(8, result);
     }
+
+    [Fact]
+    public void PicksForcedTrackTaggedWithTwoLetterLanguageCode()
+    {
+        // Regression: a plain forced track with no keyword-matching title, tagged with the
+        // 2-letter ISO 639-1 code "en" instead of the 3-letter "eng" the default config uses,
+        // used to be rejected outright by an exact string comparison.
+        var streams = new List<MediaStream>
+        {
+            Subtitle(1, isForced: false, language: "eng", title: "Full Subtitles"),
+            Subtitle(2, isForced: true, language: "en", title: null)
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, PreferredLanguages, ForcedKeywords);
+
+        Assert.Equal(2, result);
+    }
+
+    [Fact]
+    public void PicksForcedTrackWhenPreferredLanguageIsTwoLetterAndTrackIsThreeLetter()
+    {
+        var streams = new List<MediaStream>
+        {
+            Subtitle(3, isForced: true, language: "eng", title: null)
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, new[] { "en" }, ForcedKeywords);
+
+        Assert.Equal(3, result);
+    }
+
+    [Fact]
+    public void PicksForcedTrackUsingBibliographicLanguageAlias()
+    {
+        // "ger" (ISO 639-2/B) and "deu" (ISO 639-2/T) both mean German.
+        var streams = new List<MediaStream>
+        {
+            Subtitle(4, isForced: true, language: "ger", title: null)
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, new[] { "deu" }, ForcedKeywords);
+
+        Assert.Equal(4, result);
+    }
 }
