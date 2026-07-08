@@ -1,0 +1,22 @@
+---
+name: "Better Subtitles"
+guid: "a2e6f8b0-3f7c-4b7a-9b0e-6f1c2d3a4b5c"
+version: "1.0.0.0"
+targetAbi: "10.10.0.0"
+framework: "net8.0"
+owner: "TIGamingTV"
+overview: "Automatically selects forced English / anime Signs & Songs subtitle tracks on playback start."
+description: >
+  Watches every session's playback start event and, if the media has a forced
+  English subtitle track or an anime "Signs & Songs" track, tells the client
+  to select it automatically - even when the track's forced flag or language
+  tag is missing or wrong in the source file. Works identically in Jellyfin
+  Web and Jellyfin Desktop since the selection is driven entirely server-side.
+category: "General"
+artifacts:
+- "Jellyfin.Plugin.BetterSubtitles.dll"
+changelog: >
+  - 1.0.0.0: Initial release. Auto-selects forced/Signs & Songs subtitle
+    tracks on playback start via session commands; configurable preferred
+    languages and title keywords.
+---
