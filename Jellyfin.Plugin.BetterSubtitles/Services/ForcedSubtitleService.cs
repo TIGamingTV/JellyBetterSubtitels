@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Controller.Library;
@@ -20,16 +21,22 @@ public class ForcedSubtitleService : IHostedService
     private static readonly TimeSpan NegotiationDelay = TimeSpan.FromMilliseconds(500);
 
     private readonly ISessionManager _sessionManager;
+    private readonly IMediaSourceManager _mediaSourceManager;
     private readonly ILogger<ForcedSubtitleService> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ForcedSubtitleService"/> class.
     /// </summary>
     /// <param name="sessionManager">Instance of the <see cref="ISessionManager"/> interface.</param>
+    /// <param name="mediaSourceManager">Instance of the <see cref="IMediaSourceManager"/> interface.</param>
     /// <param name="logger">Instance of the <see cref="ILogger{ForcedSubtitleService}"/> interface.</param>
-    public ForcedSubtitleService(ISessionManager sessionManager, ILogger<ForcedSubtitleService> logger)
+    public ForcedSubtitleService(
+        ISessionManager sessionManager,
+        IMediaSourceManager mediaSourceManager,
+        ILogger<ForcedSubtitleService> logger)
     {
         _sessionManager = sessionManager;
+        _mediaSourceManager = mediaSourceManager;
         _logger = logger;
     }
 
@@ -65,9 +72,33 @@ public class ForcedSubtitleService : IHostedService
             }
 
             var session = e.Session;
-            var mediaStreams = e.MediaInfo?.MediaStreams;
-            if (session is null || mediaStreams is null)
+            if (session is null)
             {
+                _logger.LogDebug("PlaybackStart fired without a session, skipping");
+                return;
+            }
+
+            if (e.Item is null)
+            {
+                _logger.LogDebug("PlaybackStart fired without an item, skipping session {SessionId}", session.Id);
+                return;
+            }
+
+            // Pull the stream list from the server's own record of the item rather than trusting
+            // the client-reported MediaInfo - some clients (e.g. the mpv-backed Jellyfin Desktop
+            // app) don't populate MediaStreams the same way the browser/web client does, which
+            // otherwise causes this to silently do nothing with no way to tell why.
+            var mediaSources = _mediaSourceManager.GetStaticMediaSources(e.Item, enablePathSubstitution: false);
+            var mediaSource = mediaSources.FirstOrDefault(m => string.Equals(m.Id, e.MediaSourceId, StringComparison.Ordinal))
+                ?? mediaSources.FirstOrDefault();
+            var mediaStreams = mediaSource?.MediaStreams;
+            if (mediaStreams is null || mediaStreams.Count == 0)
+            {
+                _logger.LogDebug(
+                    "No media streams found for \"{ItemName}\" (media source {MediaSourceId}) on session {SessionId}",
+                    e.Item.Name,
+                    e.MediaSourceId,
+                    session.Id);
                 return;
             }
 
@@ -77,7 +108,7 @@ public class ForcedSubtitleService : IHostedService
             var bestIndex = SubtitleMatcher.FindBestIndex(mediaStreams, preferredLanguages, forcedKeywords);
             if (bestIndex is null)
             {
-                _logger.LogDebug("No forced/signs & songs subtitle candidate for {ItemName}", e.MediaInfo?.Name);
+                _logger.LogDebug("No forced/signs & songs subtitle candidate for {ItemName}", e.Item.Name);
                 return;
             }
 
@@ -111,7 +142,7 @@ public class ForcedSubtitleService : IHostedService
             _logger.LogInformation(
                 "Selected forced subtitle stream {Index} for \"{ItemName}\" on session {SessionId} ({Client})",
                 bestIndex,
-                e.MediaInfo?.Name,
+                e.Item.Name,
                 session.Id,
                 session.Client);
         }
