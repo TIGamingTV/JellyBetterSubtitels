@@ -40,7 +40,7 @@ public static class SubtitleMatcher
             }
 
             var languageMatches = string.IsNullOrWhiteSpace(stream.Language)
-                || preferredLanguages.Any(lang => string.Equals(lang, stream.Language, StringComparison.OrdinalIgnoreCase));
+                || preferredLanguages.Any(lang => LanguageCodes.Normalize(lang) == LanguageCodes.Normalize(stream.Language));
             var keywordMatches = MatchesKeyword(stream, forcedKeywords);
 
             int score;
