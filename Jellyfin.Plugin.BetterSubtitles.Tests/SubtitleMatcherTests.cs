@@ -51,6 +51,22 @@ public class SubtitleMatcherTests
     }
 
     [Fact]
+    public void IgnoresKeywordTitledTrackInNonPreferredLanguage()
+    {
+        // A "Signs & Songs" style title in a non-preferred language must NOT be selected -
+        // the keyword rule only applies to preferred-language (or untagged) tracks.
+        var streams = new List<MediaStream>
+        {
+            Subtitle(2, isForced: false, language: "eng", title: "Full Subtitles"),
+            Subtitle(3, isForced: false, language: "ita", title: "Signs & Songs")
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, PreferredLanguages, ForcedKeywords);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
     public void NeverPicksAFullDialogueTrack()
     {
         var streams = new List<MediaStream>

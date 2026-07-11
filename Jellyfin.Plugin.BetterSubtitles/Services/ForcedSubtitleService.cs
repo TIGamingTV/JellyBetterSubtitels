@@ -13,11 +13,15 @@ namespace Jellyfin.Plugin.BetterSubtitles.Services;
 /// <summary>
 /// Watches for playback starting on any session and, when a forced / "signs &amp; songs"
 /// subtitle track is found, commands the client to select it - regardless of whether the
-/// track's forced disposition flag or language tag is actually correct.
+/// track's forced disposition flag or language tag is actually correct. When no such track
+/// is found it forces subtitles off, overriding whatever Jellyfin would otherwise select.
 /// </summary>
 public class ForcedSubtitleService : IHostedService
 {
     private static readonly TimeSpan NegotiationDelay = TimeSpan.FromMilliseconds(500);
+
+    // Jellyfin's convention for "no subtitle track selected".
+    private const int SubtitleOffIndex = -1;
 
     private readonly ISessionManager _sessionManager;
     private readonly ILogger<ForcedSubtitleService> _logger;
@@ -75,16 +79,11 @@ public class ForcedSubtitleService : IHostedService
             var forcedKeywords = SplitConfigValue(config.ForcedKeywords);
 
             var bestIndex = SubtitleMatcher.FindBestIndex(mediaStreams, preferredLanguages, forcedKeywords);
-            if (bestIndex is null)
-            {
-                _logger.LogDebug("No forced/signs & songs subtitle candidate for {ItemName}", e.MediaInfo?.Name);
-                return;
-            }
 
-            if (session.PlayState?.SubtitleStreamIndex == bestIndex)
-            {
-                return;
-            }
+            // When no track qualifies we don't leave Jellyfin's own pick in place - we force
+            // subtitles off (index -1) so a mistagged full/forced-foreign track Jellyfin would
+            // otherwise auto-select never shows. This deliberately overrides Jellyfin's logic.
+            var targetIndex = bestIndex ?? SubtitleOffIndex;
 
             if (!session.SupportedCommands.Contains(GeneralCommandType.SetSubtitleStreamIndex))
             {
@@ -99,21 +98,40 @@ public class ForcedSubtitleService : IHostedService
             // PlaybackStart fires; give it a moment before overriding the selection.
             await Task.Delay(NegotiationDelay, CancellationToken.None).ConfigureAwait(false);
 
+            // A null current index means "no subtitle", which is the same state as -1; only
+            // send a command when the current selection differs from what we want.
+            var currentIndex = session.PlayState?.SubtitleStreamIndex ?? SubtitleOffIndex;
+            if (currentIndex == targetIndex)
+            {
+                return;
+            }
+
             var command = new GeneralCommand
             {
                 Name = GeneralCommandType.SetSubtitleStreamIndex
             };
-            command.Arguments["Index"] = bestIndex.Value.ToString(CultureInfo.InvariantCulture);
+            command.Arguments["Index"] = targetIndex.ToString(CultureInfo.InvariantCulture);
 
             await _sessionManager.SendGeneralCommand(session.Id, session.Id, command, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            _logger.LogInformation(
-                "Selected forced subtitle stream {Index} for \"{ItemName}\" on session {SessionId} ({Client})",
-                bestIndex,
-                e.MediaInfo?.Name,
-                session.Id,
-                session.Client);
+            if (bestIndex is null)
+            {
+                _logger.LogInformation(
+                    "No forced/signs & songs subtitle for \"{ItemName}\"; disabled subtitles on session {SessionId} ({Client})",
+                    e.MediaInfo?.Name,
+                    session.Id,
+                    session.Client);
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Selected forced subtitle stream {Index} for \"{ItemName}\" on session {SessionId} ({Client})",
+                    bestIndex,
+                    e.MediaInfo?.Name,
+                    session.Id,
+                    session.Client);
+            }
         }
         catch (Exception ex)
         {
