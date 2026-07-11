@@ -18,8 +18,10 @@ This plugin doesn't rely on Jellyfin's own matching logic or rewrite your
 files. Instead it watches every session's playback-start event, looks at the
 actual subtitle track titles and flags, and tells the client which subtitle
 track to display - the same way Jellyfin's own remote-control commands work.
-If nothing looks like a forced/Signs & Songs track, it leaves your existing
-selection untouched.
+If nothing looks like a forced/Signs & Songs track, it turns subtitles off -
+overriding any track Jellyfin's own auto-selection would otherwise have picked
+(e.g. a forced foreign-language track), so you never get an unexpected
+full-dialogue subtitle.
 
 ## How it decides
 
@@ -30,12 +32,14 @@ For every subtitle stream on the item that just started playing:
 2. **High confidence**: flagged forced and in a preferred language (or the
    language tag is blank) - Jellyfin's own convention.
 3. **Fallback**: not flagged forced (or mistagged), but the title matches a
-   forced keyword by itself - this is what catches the common mistagged
-   anime case.
-4. Anything else (full dialogue tracks) is never auto-selected.
+   forced keyword *and* the track is in a preferred language (or the language
+   tag is blank) - this is what catches the common mistagged anime case.
+4. Anything else (full dialogue tracks, keyword tracks in the wrong language)
+   is never auto-selected.
 
 The best-scoring candidate wins; ties go to the lowest stream index. If no
-stream qualifies, nothing is changed.
+stream qualifies, the plugin turns subtitles off - overriding whatever track
+Jellyfin's own logic would otherwise have selected.
 
 ## Installation
 
@@ -83,7 +87,9 @@ The built DLL is at
 1. Play an episode/movie that has a forced or "Signs & Songs" subtitle track.
 2. Check **Dashboard → Logs** for an `Information`-level entry like
    `Selected forced subtitle stream N for "..." on session ...` - this
-   confirms the plugin found and applied a match.
+   confirms the plugin found and applied a match. When no track qualifies
+   you'll instead see `No forced/signs & songs subtitle for "..."; disabled
+   subtitles on session ...`.
 3. Confirm the subtitle appears automatically in both Jellyfin Web and
    Jellyfin Desktop without manually selecting it.
 
