@@ -44,10 +44,38 @@ public static class LanguageCodes
             ["alb"] = "sq",
             ["sqi"] = "sq",
             ["mac"] = "mk",
-            ["mkd"] = "mk"
+            ["mkd"] = "mk",
+            ["cze"] = "cs",
+            ["ces"] = "cs",
+            ["gre"] = "el",
+            ["ell"] = "el",
+            ["ice"] = "is",
+            ["isl"] = "is",
+            ["mao"] = "mi",
+            ["mri"] = "mi",
+            ["slo"] = "sk",
+            ["slk"] = "sk",
+            ["tib"] = "bo",
+            ["bod"] = "bo",
+            ["wel"] = "cy",
+            ["cym"] = "cy"
         };
 
     private static readonly IReadOnlyDictionary<string, string> IsoToTwoLetter = BuildIsoLookup();
+
+    /// <summary>
+    /// Determines whether a language tag should be treated as "undefined" - i.e. blank,
+    /// or the ISO 639-2 "und" code that media files use when the language is unknown.
+    /// Such tracks are considered a match for any preferred language, matching Jellyfin's
+    /// own convention of trusting an unlabeled forced track.
+    /// </summary>
+    /// <param name="code">A language code, or <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the tag conveys no specific language.</returns>
+    public static bool IsUndefined(string? code)
+    {
+        return string.IsNullOrWhiteSpace(code)
+            || string.Equals(code.Trim(), "und", StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>
     /// Normalizes a language code to a canonical lowercase form (2-letter ISO

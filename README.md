@@ -65,10 +65,10 @@ Go to **Dashboard → Plugins → Better Subtitles**:
 - **Preferred languages** - comma-separated ISO 639-2 codes (default `eng`).
   A track flagged forced is trusted automatically when its language is one of
   these, or blank.
-- **Forced track keywords** - one keyword/phrase per line (default includes
-  `forced`, `signs`, `songs`, `signs & songs`), matched case-insensitively
-  against the subtitle track's title to catch tracks whose forced flag is
-  missing or wrong.
+- **Forced track keywords** - one keyword/phrase per line (defaults are
+  `forced`, `signs`, `songs`, `signs & songs`, `signs and songs`, `sign`,
+  `song`), matched case-insensitively as substrings of the subtitle track's
+  title to catch tracks whose forced flag is missing or wrong.
 
 ## Building from source
 
