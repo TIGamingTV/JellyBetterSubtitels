@@ -39,7 +39,7 @@ public static class SubtitleMatcher
                 continue;
             }
 
-            var languageMatches = string.IsNullOrWhiteSpace(stream.Language)
+            var languageMatches = LanguageCodes.IsUndefined(stream.Language)
                 || preferredLanguages.Any(lang => LanguageCodes.Normalize(lang) == LanguageCodes.Normalize(stream.Language));
             var keywordMatches = MatchesKeyword(stream, forcedKeywords);
 
