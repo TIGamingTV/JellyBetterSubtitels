@@ -18,8 +18,10 @@ This plugin doesn't rely on Jellyfin's own matching logic or rewrite your
 files. Instead it watches every session's playback-start event, looks at the
 actual subtitle track titles and flags, and tells the client which subtitle
 track to display - the same way Jellyfin's own remote-control commands work.
-If nothing looks like a forced/Signs & Songs track, it leaves your existing
-selection untouched.
+If nothing looks like a forced/Signs & Songs track, it turns subtitles off -
+overriding any track Jellyfin's own auto-selection would otherwise have picked
+(e.g. a forced foreign-language track), so you never get an unexpected
+full-dialogue subtitle.
 
 ## How it decides
 
@@ -30,12 +32,14 @@ For every subtitle stream on the item that just started playing:
 2. **High confidence**: flagged forced and in a preferred language (or the
    language tag is blank) - Jellyfin's own convention.
 3. **Fallback**: not flagged forced (or mistagged), but the title matches a
-   forced keyword by itself - this is what catches the common mistagged
-   anime case.
-4. Anything else (full dialogue tracks) is never auto-selected.
+   forced keyword *and* the track is in a preferred language (or the language
+   tag is blank) - this is what catches the common mistagged anime case.
+4. Anything else (full dialogue tracks, keyword tracks in the wrong language)
+   is never auto-selected.
 
 The best-scoring candidate wins; ties go to the lowest stream index. If no
-stream qualifies, nothing is changed.
+stream qualifies, the plugin turns subtitles off - overriding whatever track
+Jellyfin's own logic would otherwise have selected.
 
 ## Installation
 
@@ -61,10 +65,10 @@ Go to **Dashboard → Plugins → Better Subtitles**:
 - **Preferred languages** - comma-separated ISO 639-2 codes (default `eng`).
   A track flagged forced is trusted automatically when its language is one of
   these, or blank.
-- **Forced track keywords** - one keyword/phrase per line (default includes
-  `forced`, `signs`, `songs`, `signs & songs`), matched case-insensitively
-  against the subtitle track's title to catch tracks whose forced flag is
-  missing or wrong.
+- **Forced track keywords** - one keyword/phrase per line (defaults are
+  `forced`, `signs`, `songs`, `signs & songs`, `signs and songs`, `sign`,
+  `song`), matched case-insensitively as substrings of the subtitle track's
+  title to catch tracks whose forced flag is missing or wrong.
 
 ## Building from source
 
@@ -83,7 +87,9 @@ The built DLL is at
 1. Play an episode/movie that has a forced or "Signs & Songs" subtitle track.
 2. Check **Dashboard → Logs** for an `Information`-level entry like
    `Selected forced subtitle stream N for "..." on session ...` - this
-   confirms the plugin found and applied a match.
+   confirms the plugin found and applied a match. When no track qualifies
+   you'll instead see `No forced/signs & songs subtitle for "..."; disabled
+   subtitles on session ...`.
 3. Confirm the subtitle appears automatically in both Jellyfin Web and
    Jellyfin Desktop without manually selecting it.
 

@@ -51,6 +51,22 @@ public class SubtitleMatcherTests
     }
 
     [Fact]
+    public void IgnoresKeywordTitledTrackInNonPreferredLanguage()
+    {
+        // A "Signs & Songs" style title in a non-preferred language must NOT be selected -
+        // the keyword rule only applies to preferred-language (or untagged) tracks.
+        var streams = new List<MediaStream>
+        {
+            Subtitle(2, isForced: false, language: "eng", title: "Full Subtitles"),
+            Subtitle(3, isForced: false, language: "ita", title: "Signs & Songs")
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, PreferredLanguages, ForcedKeywords);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
     public void NeverPicksAFullDialogueTrack()
     {
         var streams = new List<MediaStream>
@@ -162,5 +178,35 @@ public class SubtitleMatcherTests
         var result = SubtitleMatcher.FindBestIndex(streams, new[] { "deu" }, ForcedKeywords);
 
         Assert.Equal(4, result);
+    }
+
+    [Fact]
+    public void PicksForcedTrackWhenBibliographicAndTerminologyCodesDiffer()
+    {
+        // A forced Czech track tagged with the bibliographic code "cze" must match a
+        // preferred language given in the terminology form "ces" (and vice versa).
+        var streams = new List<MediaStream>
+        {
+            Subtitle(2, isForced: true, language: "cze", title: null)
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, new[] { "ces" }, ForcedKeywords);
+
+        Assert.Equal(2, result);
+    }
+
+    [Fact]
+    public void PicksForcedTrackTaggedWithUndefinedLanguage()
+    {
+        // Releases frequently tag a forced track's language as "und" (ISO 639-2
+        // "Undetermined"); it should be treated like a blank tag and trusted.
+        var streams = new List<MediaStream>
+        {
+            Subtitle(2, isForced: true, language: "und", title: null)
+        };
+
+        var result = SubtitleMatcher.FindBestIndex(streams, PreferredLanguages, ForcedKeywords);
+
+        Assert.Equal(2, result);
     }
 }

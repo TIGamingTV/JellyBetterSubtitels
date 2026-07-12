@@ -39,7 +39,7 @@ public static class SubtitleMatcher
                 continue;
             }
 
-            var languageMatches = string.IsNullOrWhiteSpace(stream.Language)
+            var languageMatches = LanguageCodes.IsUndefined(stream.Language)
                 || preferredLanguages.Any(lang => LanguageCodes.Normalize(lang) == LanguageCodes.Normalize(stream.Language));
             var keywordMatches = MatchesKeyword(stream, forcedKeywords);
 
@@ -54,10 +54,10 @@ public static class SubtitleMatcher
                 // Jellyfin's own convention for a forced track: trust it even without a matching title.
                 score = 3;
             }
-            else if (keywordMatches)
+            else if (keywordMatches && languageMatches)
             {
-                // Not flagged forced (or wrong/missing language), but the title gives it away -
-                // this is the common mistagged anime "Signs & Songs" case.
+                // Not flagged forced, but the title gives it away and the language is right
+                // (or untagged) - this is the common mistagged anime "Signs & Songs" case.
                 score = 2;
             }
             else
