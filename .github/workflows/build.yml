@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Restore
         run: dotnet restore JellyBetterSubtitels.sln
@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
 
       - name: Determine version
         id: version
@@ -78,7 +78,7 @@ jobs:
           zip_name = "${{ steps.package.outputs.zip_name }}"
           checksum = "${{ steps.package.outputs.checksum }}"
           repo = "${{ github.repository }}"
-          target_abi = "10.10.0.0"
+          target_abi = "12.0.0.0"
 
           with open("manifest.json") as f:
               manifest = json.load(f)

@@ -19,11 +19,12 @@ have picked.
 
 ## Tech stack
 
-- **.NET 8** class library (`net8.0`).
-- **Jellyfin 10.10.x** plugin ABI (`targetAbi: 10.10.0.0`).
-- `Jellyfin.Controller` / `Jellyfin.Model` **10.10.7** (referenced with
+- **.NET 10** class library (`net10.0`).
+- **Jellyfin 12.x** plugin ABI (`targetAbi: 12.0.0.0`).
+- `Jellyfin.Controller` / `Jellyfin.Model` **12.0.0-rc7** (referenced with
   `ExcludeAssets: runtime` so the plugin builds against, but does not ship, the
-  server assemblies).
+  server assemblies). Bump to the stable `12.0.0` release once it ships on
+  NuGet.
 - Tests: **xUnit** (`Microsoft.NET.Test.Sdk`, `xunit`).
 
 ## Project layout
@@ -82,7 +83,7 @@ dotnet build JellyBetterSubtitels.sln
 dotnet test Jellyfin.Plugin.BetterSubtitles.Tests/Jellyfin.Plugin.BetterSubtitles.Tests.csproj
 ```
 
-Built DLL: `Jellyfin.Plugin.BetterSubtitles/bin/Debug/net8.0/Jellyfin.Plugin.BetterSubtitles.dll`.
+Built DLL: `Jellyfin.Plugin.BetterSubtitles/bin/Debug/net10.0/Jellyfin.Plugin.BetterSubtitles.dll`.
 
 ## Conventions & guardrails
 
@@ -108,7 +109,7 @@ Built DLL: `Jellyfin.Plugin.BetterSubtitles/bin/Debug/net8.0/Jellyfin.Plugin.Bet
   as `better-subtitles_<version>.zip`, creates a GitHub release, and **commits a
   new entry to `manifest.json` on the default branch** automatically.
 - Do **not** hand-edit `manifest.json` version entries for a release — let the
-  workflow do it. `targetAbi` for new entries is hardcoded to `10.10.0.0` in the
+  workflow do it. `targetAbi` for new entries is hardcoded to `12.0.0.0` in the
   workflow.
 
 ## Targeting a different Jellyfin version
