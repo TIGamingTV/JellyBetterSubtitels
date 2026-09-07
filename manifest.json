@@ -8,6 +8,14 @@
     "category": "General",
     "versions": [
       {
+        "version": "1.0.0.0",
+        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v1.0.0.0",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v1.0.0.0/better-subtitles_1.0.0.0.zip",
+        "checksum": "ff74a0329b1221e685fc51ad8edbf8ae",
+        "timestamp": "2026-09-07 16:54:08"
+      },
+      {
         "version": "0.0.5.0",
         "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.5.0",
         "targetAbi": "10.10.0.0",
