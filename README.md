@@ -80,7 +80,7 @@ dotnet test Jellyfin.Plugin.BetterSubtitles.Tests/Jellyfin.Plugin.BetterSubtitle
 ```
 
 The built DLL is at
-`Jellyfin.Plugin.BetterSubtitles/bin/Debug/net8.0/Jellyfin.Plugin.BetterSubtitles.dll`.
+`Jellyfin.Plugin.BetterSubtitles/bin/Debug/net10.0/Jellyfin.Plugin.BetterSubtitles.dll`.
 
 ## Verifying it works
 
@@ -93,7 +93,9 @@ The built DLL is at
 3. Confirm the subtitle appears automatically in both Jellyfin Web and
    Jellyfin Desktop without manually selecting it.
 
-Currently targets the Jellyfin 10.10.x plugin ABI (`targetAbi: 10.10.0.0` in
-`Jellyfin.Plugin.BetterSubtitles/build.yaml`). To target a different server
-version, update the `Jellyfin.Controller`/`Jellyfin.Model` package versions in
-the `.csproj` files and the `targetAbi` in `build.yaml` to match.
+Currently targets the Jellyfin 12.x plugin ABI (`targetAbi: 12.0.0.0` in
+`Jellyfin.Plugin.BetterSubtitles/build.yaml`), built against the `12.0.0-rc7`
+`Jellyfin.Controller`/`Jellyfin.Model` packages ahead of the Jellyfin 12
+stable release. To target a different server version, update the
+`Jellyfin.Controller`/`Jellyfin.Model` package versions in the `.csproj`
+files and the `targetAbi` in `build.yaml` to match.
