@@ -57,6 +57,11 @@ Jellyfin's own logic would otherwise have selected.
    `plugins/Better Subtitles/` data folder.
 3. Restart Jellyfin.
 
+> **Running an older Jellyfin server (pre-12.x)?** The plugin repository only
+> lists builds for the current Jellyfin ABI. Older releases built against
+> earlier server versions are still available on the
+> [Releases](../../releases) page for manual install (Option B).
+
 ## Configuration
 
 Go to **Dashboard → Plugins → Better Subtitles**:
@@ -72,7 +77,7 @@ Go to **Dashboard → Plugins → Better Subtitles**:
 
 ## Building from source
 
-Requires the .NET 8 SDK.
+Requires the .NET 10 SDK.
 
 ```bash
 dotnet build JellyBetterSubtitels.sln
@@ -94,8 +99,8 @@ The built DLL is at
    Jellyfin Desktop without manually selecting it.
 
 Currently targets the Jellyfin 12.x plugin ABI (`targetAbi: 12.0.0.0` in
-`Jellyfin.Plugin.BetterSubtitles/build.yaml`), built against the `12.0.0-rc7`
-`Jellyfin.Controller`/`Jellyfin.Model` packages ahead of the Jellyfin 12
-stable release. To target a different server version, update the
+`Jellyfin.Plugin.BetterSubtitles/build.yaml`), built against the stable
+`12.0.0` `Jellyfin.Controller`/`Jellyfin.Model` packages. To target a
+different server version, update the
 `Jellyfin.Controller`/`Jellyfin.Model` package versions in the `.csproj`
 files and the `targetAbi` in `build.yaml` to match.

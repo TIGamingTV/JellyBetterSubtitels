@@ -21,10 +21,9 @@ have picked.
 
 - **.NET 10** class library (`net10.0`).
 - **Jellyfin 12.x** plugin ABI (`targetAbi: 12.0.0.0`).
-- `Jellyfin.Controller` / `Jellyfin.Model` **12.0.0-rc7** (referenced with
+- `Jellyfin.Controller` / `Jellyfin.Model` **12.0.0** (stable; referenced with
   `ExcludeAssets: runtime` so the plugin builds against, but does not ship, the
-  server assemblies). Bump to the stable `12.0.0` release once it ships on
-  NuGet.
+  server assemblies).
 - Tests: **xUnit** (`Microsoft.NET.Test.Sdk`, `xunit`).
 
 ## Project layout

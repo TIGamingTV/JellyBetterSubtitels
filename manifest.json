@@ -22,46 +22,6 @@
         "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v1.0.0.0/better-subtitles_1.0.0.0.zip",
         "checksum": "ff74a0329b1221e685fc51ad8edbf8ae",
         "timestamp": "2026-09-07 16:54:08"
-      },
-      {
-        "version": "0.0.5.0",
-        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.5.0",
-        "targetAbi": "10.10.0.0",
-        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.5.0/better-subtitles_0.0.5.0.zip",
-        "checksum": "19034ce9b7cb73a16901971c246b1054",
-        "timestamp": "2026-07-12 09:52:09"
-      },
-      {
-        "version": "0.0.4.0",
-        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.4.0",
-        "targetAbi": "10.10.0.0",
-        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.4.0/better-subtitles_0.0.4.0.zip",
-        "checksum": "9113d474fe8bebb138658294dce248ee",
-        "timestamp": "2026-07-11 18:01:51"
-      },
-      {
-        "version": "0.0.3.0",
-        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.3.0",
-        "targetAbi": "10.10.0.0",
-        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.3.0/better-subtitles_0.0.3.0.zip",
-        "checksum": "1e7a3fadf3edc4479a00063f775085de",
-        "timestamp": "2026-07-08 16:30:59"
-      },
-      {
-        "version": "0.0.2.0",
-        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.2.0",
-        "targetAbi": "10.10.0.0",
-        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.2.0/better-subtitles_0.0.2.0.zip",
-        "checksum": "a013ae9241083774377cfe50e4d56fe4",
-        "timestamp": "2026-07-08 16:03:42"
-      },
-      {
-        "version": "0.0.1.0",
-        "changelog": "See https://github.com/TIGamingTV/JellyBetterSubtitels/releases/tag/v0.0.1.0",
-        "targetAbi": "10.10.0.0",
-        "sourceUrl": "https://github.com/TIGamingTV/JellyBetterSubtitels/releases/download/v0.0.1.0/better-subtitles_0.0.1.0.zip",
-        "checksum": "3dd28be6fc272edd71de2ca56f37bd2b",
-        "timestamp": "2026-07-08 15:45:37"
       }
     ]
   }
