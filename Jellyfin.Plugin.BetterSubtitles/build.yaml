@@ -1,7 +1,7 @@
 ---
 name: "Better Subtitles"
 guid: "a2e6f8b0-3f7c-4b7a-9b0e-6f1c2d3a4b5c"
-version: "1.0.0.0"
+version: "1.1.1.0"
 targetAbi: "12.0.0.0"
 framework: "net10.0"
 owner: "TIGamingTV"
@@ -13,6 +13,7 @@ description: >
   tag is missing or wrong in the source file. Works identically in Jellyfin
   Web and Jellyfin Desktop since the selection is driven entirely server-side.
 category: "General"
+imageUrl: "https://raw.githubusercontent.com/TIGamingTV/JellyBetterSubtitels/main/JellyBetterSubtitels.png"
 artifacts:
 - "Jellyfin.Plugin.BetterSubtitles.dll"
 changelog: >
