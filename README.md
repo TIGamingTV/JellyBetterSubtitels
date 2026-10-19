@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="JellyBetterSubtitels.png" alt="JellyBetterSubtitels" width="400">
+</p>
+
 # JellyBetterSubtitels
 
 A Jellyfin server plugin that automatically selects the forced English subtitle
