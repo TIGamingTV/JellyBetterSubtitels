@@ -46,7 +46,16 @@ Jellyfin.Plugin.BetterSubtitles.Tests/
   LanguageCodesTests.cs
 manifest.json                       # Plugin repository manifest (release entries)
 .github/workflows/build.yml         # CI: build + test; tag push -> publish, release, manifest update
+README.md                           # User landing page: features, install, quick start
+docs/
+  configuration.md                  # Settings, selection rules, log messages, limitations
+  troubleshooting.md                # Common user problems
+  development.md                    # Build, test, release, project layout
 ```
+
+When behavior, settings, defaults, or log messages change, update
+`docs/configuration.md` (the authoritative user reference) and the summary
+table in `README.md`.
 
 ## How selection works (`SubtitleMatcher.FindBestIndex`)
 
@@ -71,9 +80,12 @@ subtitles off".
 ## Configuration (`PluginConfiguration`)
 
 - `Enabled` (default `true`).
-- `PreferredLanguages` — comma-separated ISO 639-2 codes, default `eng`.
+- `PreferredLanguages` — comma-separated ISO 639-1/-2 codes, default `eng`.
 - `ForcedKeywords` — newline-separated, default: `forced`, `signs`, `songs`,
   `signs & songs`, `signs and songs`, `sign`, `song`.
+- Both strings are split on commas **and** line breaks
+  (`ForcedSubtitleService.SplitConfigValue`), so keywords cannot contain commas.
+- Config is read on every `PlaybackStart`; saving takes effect without a restart.
 
 ## Build & test
 
